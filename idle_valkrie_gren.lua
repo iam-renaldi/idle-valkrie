@@ -20,17 +20,42 @@ function mainMenu()
 end
 
 function modDamage()
-  gg.setRanges(gg.REGION_ANONYMOUS)
-  gg.searchNumber("100;1D;0.1F::17", gg.TYPE_FLOAT)
-  gg.refineNumber("100", gg.TYPE_FLOAT)
-  local r = gg.getResults(10)
-  for i, v in ipairs(r) do
-    v.value = "999999"
-    v.freeze = true
-  end
-  gg.setValues(r)
-  gg.addListItems(r)
-  gg.toast("💥 Damage modded!")
+  gg.clearResults()
+  gg.setRanges(gg.REGION_ANONYMOUS)
+  gg.searchNumber("1072000000~1500000000", gg.TYPE_DWORD)
+  gg.toast("📡 Mencari value damage...")
+
+  repeat
+    gg.refineAddress("A") -- biar lebih cepat proses
+    local count = gg.getResultsCount()
+    gg.toast("📉 Tersisa: " .. count .. " value...")
+  until count <= 200
+
+  local results = gg.getResults(200)
+  local filtered = {}
+
+  for _, v in ipairs(results) do
+    if v.value >= 1072000000 and v.value <= 1080000000 then
+      table.insert(filtered, v)
+    end
+  end
+
+  if #filtered == 0 then
+    gg.toast("❌ Tidak ditemukan value dalam rentang target.")
+    return
+  end
+
+  -- Edit value jadi kelipatan 10 mulai dari 1.082.000.000
+  local newValue = 1082000000
+  for i, v in ipairs(filtered) do
+    v.value = newValue
+    v.freeze = true
+    newValue = newValue + 10000000 -- kelipatan 10 juta (sesuai kelipatan 10 yang dimaksud)
+  end
+
+  gg.setValues(filtered)
+  gg.addListItems(filtered)
+  gg.toast("💥 Damage diubah dan dibekukan!")
 end
 
 function modCooldown()
