@@ -1,113 +1,153 @@
-gg.alert("🧙‍♂️ Welcome to Idle Valkyrie Script\nby Gren")
+-- Idle Valkyrie Script by Gren
+-- Versi: 1.0 (Loader Offline)
 
+if gg.BUILD == nil then
+  print("Jalankan dari Game Guardian.")
+  os.exit()
+end
+
+gg.setVisible(false)
+gg.clearResults()
+gg.alert("🧙‍♂️ Selamat datang di Idle Valkyrie Script\nby Gren")
+
+-- Fungsi modDamage
+function modDamage()
+  gg.setRanges(gg.REGION_ANONYMOUS)
+  gg.searchNumber("1072000000~1500000000", gg.TYPE_DWORD)
+  gg.toast("📡 Mencari value damage...")
+
+  repeat
+    gg.refineAddress("A")
+    local count = gg.getResultsCount()
+    gg.toast("📉 Tersisa: " .. count .. " value...")
+  until count <= 200
+
+  local results = gg.getResults(200)
+  local filtered = {}
+  for _, v in ipairs(results) do
+    if v.value >= 1072000000 and v.value <= 1080000000 then
+      table.insert(filtered, v)
+    end
+  end
+
+  if #filtered == 0 then
+    gg.toast("❌ Tidak ditemukan.")
+    return
+  end
+
+  local newValue = 1082000000
+  for i, v in ipairs(filtered) do
+    v.value = newValue
+    v.freeze = true
+    newValue = newValue + 10000000
+  end
+
+  gg.setValues(filtered)
+  gg.addListItems(filtered)
+  gg.toast("💥 Damage berhasil dimodifikasi!")
+end
+
+-- Fungsi alchemyChanger interaktif
+function alchemyChanger()
+  gg.alert("📌 Arahkan ke item alchemy yang bisa dibeli 10.")
+  gg.clearResults()
+  gg.searchNumber("10", gg.TYPE_DWORD)
+  gg.alert("📌 Ubah ke 9.")
+  gg.refineNumber("9", gg.TYPE_DWORD)
+  gg.alert("📌 Ubah ke 8.")
+  gg.refineNumber("7", gg.TYPE_DWORD)
+  gg.alert("📌 Ubah ke 9.")
+  gg.refineNumber("7", gg.TYPE_DWORD)
+
+  local r = gg.getResults(10)
+  if #r == 0 then
+    gg.alert("❌ Tidak ditemukan.")
+    return
+  end
+
+  local input = gg.prompt({"🎯 Jumlah alchemy item yang diinginkan:"}, nil, {"number"})
+  if not input or not input[1] then return end
+
+  for i, v in ipairs(r) do
+    v.value = tonumber(input[1])
+  end
+  gg.setValues(r)
+  gg.toast("⚗️ Alchemy diubah ke " .. input[1])
+end
+
+-- Fungsi shopChanger interaktif
+function shopChanger()
+  gg.alert("📌 Arahkan ke item shop beli 10.")
+  gg.clearResults()
+  gg.searchNumber("10", gg.TYPE_DWORD)
+  gg.alert("📌 Ubah ke 9.")
+  gg.refineNumber("9", gg.TYPE_DWORD)
+  gg.alert("📌 Ubah ke 8.")
+  gg.refineNumber("7", gg.TYPE_DWORD)
+  gg.alert("📌 Ubah ke 9.")
+  gg.refineNumber("7", gg.TYPE_DWORD)
+
+  local r = gg.getResults(10)
+  if #r == 0 then
+    gg.alert("❌ Tidak ditemukan.")
+    return
+  end
+
+  local input = gg.prompt({"💰 Masukkan harga item shop baru:"}, nil, {"number"})
+  if not input or not input[1] then return end
+
+  for i, v in ipairs(r) do
+    v.value = tonumber(input[1])
+  end
+  gg.setValues(r)
+  gg.toast("🛒 Harga shop diubah ke " .. input[1])
+end
+
+-- Fungsi dungeonChanger interaktif
+function dungeonChanger()
+  gg.alert("📌 Masuk ke dungeon yang bisa diserang 3-5 kali.")
+  gg.clearResults()
+  gg.searchNumber("3;4;5", gg.TYPE_DWORD)
+  gg.alert("📌 Ubah ke 4.")
+  gg.refineNumber("4", gg.TYPE_DWORD)
+  gg.alert("📌 Ubah ke 5.")
+  gg.refineNumber("5", gg.TYPE_DWORD)
+
+  local r = gg.getResults(5)
+  if #r == 0 then
+    gg.alert("❌ Tidak ditemukan.")
+    return
+  end
+
+  local input = gg.prompt({"🏰 Masukkan jumlah dungeon entry baru:"}, nil, {"number"})
+  if not input or not input[1] then return end
+
+  for i, v in ipairs(r) do
+    v.value = tonumber(input[1])
+  end
+  gg.setValues(r)
+  gg.toast("🏰 Entry dungeon diubah ke " .. input[1])
+end
+
+-- Menu utama
 function mainMenu()
   local menu = gg.choice({
     "💥 Mod Damage",
-    "⏱️ Cooldown Reduction",
     "⚗️ Alchemy Changer",
     "🛒 Shop Changer",
     "🏰 Dungeon Changer",
     "❌ Exit"
-  }, nil, "Select a feature:")
+  }, nil, "🔰 Pilih fitur yang ingin digunakan:")
 
   if menu == 1 then modDamage()
-  elseif menu == 2 then modCooldown()
-  elseif menu == 3 then alchemyChanger()
-  elseif menu == 4 then shopChanger()
-  elseif menu == 5 then dungeonChanger()
+  elseif menu == 2 then alchemyChanger()
+  elseif menu == 3 then shopChanger()
+  elseif menu == 4 then dungeonChanger()
   else os.exit()
   end
 end
 
-function modDamage()
-  gg.clearResults()
-  gg.setRanges(gg.REGION_ANONYMOUS)
-  gg.searchNumber("1072000000~1500000000", gg.TYPE_DWORD)
-  gg.toast("📡 Mencari value damage...")
-
-  repeat
-    gg.refineAddress("A") -- biar lebih cepat proses
-    local count = gg.getResultsCount()
-    gg.toast("📉 Tersisa: " .. count .. " value...")
-  until count <= 200
-
-  local results = gg.getResults(200)
-  local filtered = {}
-
-  for _, v in ipairs(results) do
-    if v.value >= 1072000000 and v.value <= 1080000000 then
-      table.insert(filtered, v)
-    end
-  end
-
-  if #filtered == 0 then
-    gg.toast("❌ Tidak ditemukan value dalam rentang target.")
-    return
-  end
-
-  -- Edit value jadi kelipatan 10 mulai dari 1.082.000.000
-  local newValue = 1082000000
-  for i, v in ipairs(filtered) do
-    v.value = newValue
-    v.freeze = true
-    newValue = newValue + 10000000 -- kelipatan 10 juta (sesuai kelipatan 10 yang dimaksud)
-  end
-
-  gg.setValues(filtered)
-  gg.addListItems(filtered)
-  gg.toast("💥 Damage diubah dan dibekukan!")
-end
-
-function modCooldown()
-  gg.setRanges(gg.REGION_ANONYMOUS)
-  gg.searchNumber("5.0", gg.TYPE_FLOAT)
-  gg.refineNumber("5.0", gg.TYPE_FLOAT)
-  local r = gg.getResults(10)
-  for i, v in ipairs(r) do
-    v.value = "0"
-    v.freeze = true
-  end
-  gg.setValues(r)
-  gg.addListItems(r)
-  gg.toast("⏱️ Cooldown reduced!")
-end
-
-function alchemyChanger()
-  gg.setRanges(gg.REGION_ANONYMOUS)
-  gg.searchNumber("200;300;400::21", gg.TYPE_DWORD)
-  gg.refineNumber("300", gg.TYPE_DWORD)
-  local r = gg.getResults(5)
-  for i, v in ipairs(r) do
-    v.value = "9999"
-  end
-  gg.setValues(r)
-  gg.toast("⚗️ Alchemy changed!")
-end
-
-function shopChanger()
-  gg.setRanges(gg.REGION_ANONYMOUS)
-  gg.searchNumber("500;600;700::21", gg.TYPE_DWORD)
-  gg.refineNumber("600", gg.TYPE_DWORD)
-  local r = gg.getResults(5)
-  for i, v in ipairs(r) do
-    v.value = "0"
-  end
-  gg.setValues(r)
-  gg.toast("🛒 Shop prices changed!")
-end
-
-function dungeonChanger()
-  gg.setRanges(gg.REGION_ANONYMOUS)
-  gg.searchNumber("3;4;5::13", gg.TYPE_DWORD)
-  gg.refineNumber("4", gg.TYPE_DWORD)
-  local r = gg.getResults(3)
-  for i, v in ipairs(r) do
-    v.value = "999"
-  end
-  gg.setValues(r)
-  gg.toast("🏰 Dungeon difficulty lowered!")
-end
-
+-- Loop pemanggilan
 while true do
   if gg.isVisible(true) then
     gg.setVisible(false)
